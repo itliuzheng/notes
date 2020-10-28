@@ -137,3 +137,20 @@ x 		//1
 
 #### 应用
 
+
+
+## async 函数
+
+### 同步执行代码
+
+```javascript
+// 写法一
+let [foo, bar] = await Promise.all([getFoo(), getBar()]);
+
+// 写法二
+let fooPromise = getFoo();
+let barPromise = getBar();
+let foo = await fooPromise;
+let bar = await barPromise;
+```
+

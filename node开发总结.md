@@ -1,6 +1,185 @@
+## node
+
+### path 路径操作模块
+
+- path.basename
+  - 获取一个路径的文件名（默认包含扩展名）
+- path.dirname
+  - 获取一个路径中的目录部分
+- path.extname
+  - 获取一个路径中的扩展名部分
+- path.parse
+  - 把一个路径转为对象
+    - root 	根路径
+    - dir        目录
+    - base     包含后缀名的文件名
+    - ext        后缀名
+    - name   不包含后缀名的文件名
+- path.join
+  - 当你需要进行路径拼接的时候，推荐使这个方法
+- path.resolve
+  - 把一个路径或路径片段的序列解析为一个绝对路径。相当于执行cd操作。
+- path.isAbsolute
+  - 判断一个路径是否是绝对路径
+
+```javascript
+//path.relative() 方法根据当前工作目录返回 from 到 to 的相对路径。 如果 from 和 to 各自解析到相同的路径（分别调用 path.resolve() 之后），则返回零长度的字符串。
+
+path.relative('/data/orandea/test/aaa', '/data/orandea/impl/bbb');
+// 返回: '../../impl/bbb'
+```
+
+
+
+### fs 文件模块
+
+```javascript
+fs.existsSync('路径')
+//如果路径存在，则返回 true，否则返回 false。
+
+fs.mkdirSync('路径')
+//同步地创建目录。 返回 undefined
+
+fs.renameSync(oldPath, newPath)
+//同步地rename。 返回 undefined
+
+fs.rename(oldPath, newPath, callback)
+//异步地把 oldPath 文件重命名为 newPath 提供的路径名。 如果 newPath 已存在，则覆盖它。 除了可能的异常，完成回调没有其他参数。
+```
+
+### node中的非模块成员（其他成员）  
+
+在每个模块中，除了 `require`、`exports`等模块相关API之外，还有两个特殊的成员
+
+- `__dirname` 	**动态获取 **  可以用来获取当前文件模块所属目录的绝对路径
+- `__filename`   **动态获取 **  可以用来获取当前文件的绝对路径
+- `__dirname`和`__filename`是不受执行node命令所属路径影响的
+
+在文件操作中，使用相对路径是不可靠的，因为在Node中文件操作的路径被设计为相对于执行node命令所处的路径。
+
+所以为了解决问题，只需要把   **相对路径**   改为   动态的  **绝对路径**
+
+使用 `__dirname` 或者 `__filename`  来解决这个问题
+
+在拼接路径的过程中，为了避免手动拼接带来的低级错误，推荐使用 `path.join()`来辅助拼接
+
+在文件操作中使用的相对路径都统一转换为 **动态的绝对路径**
+
+`>`
+
+> 补充，模块中的路径表示和这里的文件路径没关系，
+>
+> 模块中的路径标识和文件操作中的相对路径标识不一致
+>
+> `require('./b.js')`       模块中的路径标识就是相对于当前文件模块，不受执行node命令所处路径影响
+>
+> `fs.readFile('./b.js')`
+
+### 错误相关问题
+
+```javascript
+Error: EXDEV: cross-device link not permitted, rename 'C：/xxx' -> 'D:/xxx'
+
+//文件上传的功能时候，调用fs.renameSync方法错误
+//这个提示是跨区重命名文件出现的权限问题。
+
+//解决问题
+let form = new formidable.IncomingForm();
+form.uploadDir = vacationPhotoDir; //设置上传目录
+
+```
+
+### nodejs命令行执行时带参数
+
+```javascript
+/*
+//node test.js arg1 arg2 arg3， 想取得这三个参数
+//即可以程序中用：
+	var args = process.argv.splice(2)
+//process是一个全局对象，argv返回的是一组包含命令行参数的数组。
+//第一项为”node”，第二项为执行的js的完整路径，后面是附加在命令行后的参数
+*/
+```
+
+### nodejs执行cmd命令
+
+```javascript
+const { execSync } = require('child_process');
+const path = require('path')
+const fs = require('fs')
+
+function runSync(code) {
+    console.log(code);
+    execSync(code,{
+        cwd:path.resolve(__dirname,'./backend'),
+        encoding:'utf8',
+        maxBuffer: 1024 * 2000
+    });
+}
+
+let arguments = process.argv.splice(2)
+console.log(arguments);
+
+if(arguments && arguments[0] == 'build'){
+    runSync('npm run build')
+}
+
+if(fs.existsSync(path.resolve(__dirname,'./views/_admin'))){
+    console.log('该路径已存在');
+    runSync(`rmdir /s/q ${path.resolve(__dirname,'./views/_admin')}`)
+    runSync(`mkdir ${path.resolve(__dirname,'./views/_admin')}`)
+    runSync(`mkdir ${path.resolve(__dirname,'./views/_admin/static')}`)
+}else{
+    console.log('该路径不存在');
+    runSync(`mkdir ${path.resolve(__dirname,'./views/_admin')}`)
+    runSync(`mkdir ${path.resolve(__dirname,'./views/_admin/static')}`)
+}
+
+runSync(`copy ${path.resolve(__dirname,'./backend/dist/index.html')} ${path.resolve(__dirname,'./views/_admin')}`)
+runSync(`xcopy ${path.resolve(__dirname,'./backend/dist/static')} ${path.resolve(__dirname,'./views/_admin/static')} /s /f /h`)
+
+
+```
+
+
+
+
+
 ## Express
 
 ### 配置 `art-template`模板引擎
+
+#### art-template模板引擎
+
+##### 模板命令及基础用法
+
+```html
+
+<!-- if -->
+{{if xxx>19}}
+{{else if xxx>15}}
+{{else}}
+{{/if}}
+
+<!-- 循环 -->
+{{each xxx}}
+	{{$value}}
+{{/each}}
+
+<!-- 引入子模版 -->
+{{ include './xxx.html'}}
+
+<!-- 模版继承 -->
+{{ extend './xxx.html'}}
+```
+
+##### 模板引擎循环嵌套问题
+
+```bash
+{{each object  value   index }}
+```
+
+##### 
 
 ### 在Express中获取表单GET请求参数
 
@@ -241,6 +420,23 @@ app.use(function(err, req, res, next) {
 
 
 
+### cookie与会话(express-session)
+
+```shell
+#cookie
+cnpm install --save cookie-parser
+#session
+cnpm install --save express-session
+```
+
+```javascript
+//使用
+app.use(require('cookie-parser')('cookie秘钥'));
+app.use(require('express-session')());
+```
+
+
+
 ### CRUD 案例
 
 #### 模块化思想
@@ -310,8 +506,6 @@ exit
 
 ​		查看显示所有数据库
 
-
-
 ​	`db`
 ​		查看当前操作的数据库
 
@@ -339,7 +533,9 @@ exit
 
 ​		查看集合中的数据
 
+​	`mongodump -h localhost -d user -o D:\data\dumpe`
 
+​		备份 user库里的所有数据
 
 ### 在 Node 中如何操作 MongoDB 数据
 
@@ -431,11 +627,27 @@ db.find({},(err,docs)=>{
         //成功
     }
 })
+
+//模糊查询
+db.test_info.find({"name": 
+	{
+        $regex: '测试', 
+        $options:'i'
+	}
+}) 
 ```
 
 ##### 更新
 
 ```javascript
+updateInfo:{
+    //向数组中添加元素，若数组本身含有该元素，则不添加，否则，添加，这样就避免了数组中的元素重复现象
+    $addToSet:{
+        catena:catenaName
+    }
+}
+                
+
 //第一个参数为查询参数，第二个为要更新的内容，第三个是回调函数
 db.updateOne({_id:id},updateInfo,(err,docs)=>{
     if(err){
@@ -593,52 +805,39 @@ let obj = {
 
 
 
-## path路径操作模块
+### 数据库迁移
 
-- path.basename
-  - 获取一个路径的文件名（默认包含扩展名）
-- path.dirname
-  - 获取一个路径中的目录部分
-- path.extname
-  - 获取一个路径中的扩展名部分
-- path.parse
-  - 把一个路径转为对象
-    - root 	根路径
-    - dir        目录
-    - base     包含后缀名的文件名
-    - ext        后缀名
-    - name   不包含后缀名的文件名
-- path.join
-  - 当你需要进行路径拼接的时候，推荐使这个方法
-- path.isAbsolute
-  - 判断一个路径是否是绝对路径
+将**PASSWORD**替换为admin用户的密码，并将**DATABASE**替换为您要导入/导出到集群的数据库的名称。
+
+创建一个新数据库或将数据添加到现有数据库。默认情况下，mongorestore读取当前目录的dump /子目录中的数据库转储。要从其他目录还原，请将该目录的路径作为最后一个参数传递。
+
+```shell
+mongorestore --uri mongodb+srv://liuzheng:<PASSWORD>@cluster0.cgpy9.azure.mongodb.net 
+```
 
 
 
-## node中的非模块成员（其他成员）  
+创建数据库内容的二进制导出
 
-在每个模块中，除了 `require`、`exports`等模块相关API之外，还有两个特殊的成员
+```shell
+mongodump --uri mongodb+srv://liuzheng:<PASSWORD>@cluster0.cgpy9.azure.mongodb.net/<DATABASE> 
+```
 
-- `__dirname` 	**动态获取 **  可以用来获取当前文件模块所属目录的绝对路径
-- `__filename`   **动态获取 **  可以用来获取当前文件的绝对路径
-- `__dirname`和`__filename`是不受执行node命令所属路径影响的
 
-在文件操作中，使用相对路径是不可靠的，因为在Node中文件操作的路径被设计为相对于执行node命令所处的路径。
 
-所以为了解决问题，只需要把   **相对路径**   改为   动态的  **绝对路径**
 
-使用 `__dirname` 或者 `__filename`  来解决这个问题
 
-在拼接路径的过程中，为了避免手动拼接带来的低级错误，推荐使用 `path.join()`来辅助拼接
+## 插件
 
-在文件操作中使用的相对路径都统一转换为 **动态的绝对路径**
+### 获取字符串的拼音首字母
 
-`>`
+```javascript
+const pyfl = require('pyfl').default;
+pyfl('喵'); // M
+pyfl('好笑吗跟傻子一样整天就知道哈哈哈哈哈哈哈')); // HXMGSZYYZTJZDHHHHHHH
+pyfl('罤夶繙着洗'); // TBFZX
+pyfl('Pure'); // Pure
+pyfl('Made by ❤'); // Made by ❤
+pyfl('أشتون'); // أشتون
+```
 
-> 补充，模块中的路径表示和这里的文件路径没关系，
->
-> 模块中的路径标识和文件操作中的相对路径标识不一致
->
-> `require('./b.js')`       模块中的路径标识就是相对于当前文件模块，不受执行node命令所处路径影响
->
-> `fs.readFile('./b.js')`
