@@ -310,7 +310,7 @@ AND LastName='Carter'
 
 
 
-## SQL ORDER BY 子句
+## SQL ORDER BY 子句-排序
 
 **ORDER BY 语句用于对结果集进行排序。**
 
@@ -322,7 +322,7 @@ ORDER BY 语句默认按照升序对记录进行排序。
 
 如果您希望按照降序对记录进行排序，可以使用 DESC 关键字。
 
-### 原始的表 (用在例子中的)：
+原始的表 (用在例子中的)：
 
 Orders 表:
 
@@ -333,9 +333,7 @@ Orders 表:
 | Apple    | 4698        |
 | W3School | 6953        |
 
-### 实例 1
-
-以字母顺序显示公司名称：
+### 以字母顺序显示公司名称：
 
 ```
 SELECT Company, OrderNumber FROM Orders ORDER BY Company
@@ -350,9 +348,7 @@ SELECT Company, OrderNumber FROM Orders ORDER BY Company
 | W3School | 6953        |
 | W3School | 2356        |
 
-### 实例 2
-
-以字母顺序显示公司名称（Company），并以数字顺序显示顺序号（OrderNumber）：
+### 以字母顺序显示公司名称（Company），并以数字顺序显示顺序号（OrderNumber）：
 
 ```
 SELECT Company, OrderNumber FROM Orders ORDER BY Company, OrderNumber
@@ -367,9 +363,7 @@ SELECT Company, OrderNumber FROM Orders ORDER BY Company, OrderNumber
 | W3School | 2356        |
 | W3School | 6953        |
 
-### 实例 3
-
-以逆字母顺序显示公司名称：
+### 以逆字母顺序显示公司名称：
 
 ```
 SELECT Company, OrderNumber FROM Orders ORDER BY Company DESC
@@ -384,9 +378,7 @@ SELECT Company, OrderNumber FROM Orders ORDER BY Company DESC
 | IBM      | 3532        |
 | Apple    | 4698        |
 
-### 实例 4
-
-以逆字母顺序显示公司名称，并以数字顺序显示顺序号：
+### 以逆字母顺序显示公司名称，并以数字顺序显示顺序号：
 
 ```
 SELECT Company, OrderNumber FROM Orders ORDER BY Company DESC, OrderNumber ASC
@@ -564,7 +556,7 @@ DELETE * FROM table_name
 
 # 高级教程
 
-## SQL TOP 子句
+## SQL TOP 子句/ LIMIT number
 
 TOP 子句用于规定要返回的记录的数目。
 
@@ -579,7 +571,7 @@ SELECT TOP number|percent column_name(s)
 FROM table_name
 ```
 
-### MySQL 和 Oracle 中的 SQL SELECT TOP 是等价的
+MySQL 和 Oracle 中的 SQL SELECT TOP 是等价的
 
 #### MySQL 语法
 
@@ -772,3 +764,751 @@ WHERE City NOT LIKE '%lon%'
 | :--- | :------- | :-------- | :------------- | :------- |
 | 2    | Bush     | George    | Fifth Avenue   | New York |
 | 3    | Carter   | Thomas    | Changan Street | Beijing  |
+
+
+
+## SQL 通配符
+
+在搜索数据库中的数据时，SQL 通配符可以替代一个或多个字符。
+
+SQL 通配符必须与 LIKE 运算符一起使用。
+
+在 SQL 中，可使用以下通配符：
+
+| 通配符                                 | 描述                       |
+| :------------------------------------- | :------------------------- |
+| %                                      | 替代一个或多个字符         |
+| _                                      | 仅替代一个字符             |
+| [charlist]                             | 字符列中的任何单一字符     |
+| [^charlist]<br />或者<br />[!charlist] | 不在字符列中的任何单一字符 |
+
+原始的表 (用在例子中的)：
+
+Persons 表:
+
+| Id   | LastName | FirstName | Address        | City     |
+| :--- | :------- | :-------- | :------------- | :------- |
+| 1    | Adams    | John      | Oxford Street  | London   |
+| 2    | Bush     | George    | Fifth Avenue   | New York |
+| 3    | Carter   | Thomas    | Changan Street | Beijing  |
+
+### 使用 % 通配符
+
+例子 1
+
+现在，我们希望从上面的 "Persons" 表中选取居住在以 "Ne" 开始的城市里的人：
+
+我们可以使用下面的 SELECT 语句：
+
+```sql
+SELECT * FROM Persons
+WHERE City LIKE 'Ne%'
+```
+
+结果集：
+
+| Id   | LastName | FirstName | Address      | City     |
+| :--- | :------- | :-------- | :----------- | :------- |
+| 2    | Bush     | George    | Fifth Avenue | New York |
+
+
+
+接下来，我们希望从 "Persons" 表中选取居住在包含 "lond" 的城市里的人：
+
+我们可以使用下面的 SELECT 语句：
+
+```sql
+SELECT * FROM Persons
+WHERE City LIKE '%lond%'
+```
+
+结果集：
+
+| Id   | LastName | FirstName | Address       | City   |
+| :--- | :------- | :-------- | :------------ | :----- |
+| 1    | Adams    | John      | Oxford Street | London |
+
+### 使用 _ 通配符
+
+例子 1
+
+现在，我们希望从上面的 "Persons" 表中选取名字的第一个字符之后是 "eorge" 的人：
+
+我们可以使用下面的 SELECT 语句：
+
+```
+SELECT * FROM Persons
+WHERE FirstName LIKE '_eorge'
+```
+
+结果集：
+
+| Id   | LastName | FirstName | Address      | City     |
+| :--- | :------- | :-------- | :----------- | :------- |
+| 2    | Bush     | George    | Fifth Avenue | New York |
+
+例子 2
+
+接下来，我们希望从 "Persons" 表中选取的这条记录的姓氏以 "C" 开头，然后是一个任意字符，然后是 "r"，然后是任意字符，然后是 "er"：
+
+我们可以使用下面的 SELECT 语句：
+
+```
+SELECT * FROM Persons
+WHERE LastName LIKE 'C_r_er'
+```
+
+结果集：
+
+| Id   | LastName | FirstName | Address        | City    |
+| :--- | :------- | :-------- | :------------- | :------ |
+| 3    | Carter   | Thomas    | Changan Street | Beijing |
+
+### 使用 [charlist] 通配符
+
+例子 1
+
+现在，我们希望从上面的 "Persons" 表中选取居住的城市以 "A" 或 "L" 或 "N" 开头的人：
+
+我们可以使用下面的 SELECT 语句：
+
+```sql
+SELECT * FROM Persons
+WHERE City LIKE '[ALN]%'
+```
+
+结果集：
+
+| Id   | LastName | FirstName | Address       | City     |
+| :--- | :------- | :-------- | :------------ | :------- |
+| 1    | Adams    | John      | Oxford Street | London   |
+| 2    | Bush     | George    | Fifth Avenue  | New York |
+
+例子 2
+
+现在，我们希望从上面的 "Persons" 表中选取居住的城市*不以* "A" 或 "L" 或 "N" 开头的人：
+
+我们可以使用下面的 SELECT 语句：
+
+```sql
+SELECT * FROM Persons
+WHERE City LIKE '[!ALN]%'
+```
+
+结果集：
+
+| Id   | LastName | FirstName | Address        | City    |
+| :--- | :------- | :-------- | :------------- | :------ |
+| 3    | Carter   | Thomas    | Changan Street | Beijing |
+
+
+
+## SQL IN  操作符
+
+IN 操作符允许我们在 WHERE 子句中规定多个值。
+
+### SQL IN 语法
+
+```sql
+SELECT column_name(s)
+FROM table_name
+WHERE column_name IN (value1,value2,...)
+```
+
+原始的表 (在实例中使用：)
+
+Persons 表:
+
+| Id   | LastName | FirstName | Address        | City     |
+| :--- | :------- | :-------- | :------------- | :------- |
+| 1    | Adams    | John      | Oxford Street  | London   |
+| 2    | Bush     | George    | Fifth Avenue   | New York |
+| 3    | Carter   | Thomas    | Changan Street | Beijing  |
+
+### IN 操作符实例
+
+现在，我们希望从上表中选取姓氏为 Adams 和 Carter 的人：
+
+我们可以使用下面的 SELECT 语句：
+
+```sql
+SELECT * FROM Persons
+WHERE LastName IN ('Adams','Carter')
+```
+
+结果集：
+
+| Id   | LastName | FirstName | Address        | City    |
+| :--- | :------- | :-------- | :------------- | :------ |
+| 1    | Adams    | John      | Oxford Street  | London  |
+| 3    | Carter   | Thomas    | Changan Street | Beijing |
+
+
+
+## SQL BETWEEN 操作符
+
+操作符 BETWEEN ... AND 会选取介于两个值之间的数据范围。这些值可以是数值、文本或者日期。
+
+### SQL BETWEEN 语法
+
+```sql
+SELECT column_name(s)
+FROM table_name
+WHERE column_name
+BETWEEN value1 AND value2
+```
+
+原始的表 (在实例中使用：)
+
+Persons 表:
+
+| Id   | LastName | FirstName | Address        | City     |
+| :--- | :------- | :-------- | :------------- | :------- |
+| 1    | Adams    | John      | Oxford Street  | London   |
+| 2    | Bush     | George    | Fifth Avenue   | New York |
+| 3    | Carter   | Thomas    | Changan Street | Beijing  |
+| 4    | Gates    | Bill      | Xuanwumen 10   | Beijing  |
+
+### BETWEEN 操作符实例
+
+如需以字母顺序显示介于 "Adams"**（包括）**和 "Carter"**（不包括）**之间的人，请使用下面的 SQL：
+
+```sql
+SELECT * FROM Persons
+WHERE LastName
+BETWEEN 'Adams' AND 'Carter'
+```
+
+结果集：
+
+| Id   | LastName | FirstName | Address       | City     |
+| :--- | :------- | :-------- | :------------ | :------- |
+| 1    | Adams    | John      | Oxford Street | London   |
+| 2    | Bush     | George    | Fifth Avenue  | New York |
+
+**重要事项：**不同的数据库对 BETWEEN...AND 操作符的处理方式是有差异的。
+
+某些数据库会列出介于 "Adams" 和 "Carter" 之间的人，**但不包括** "Adams" 和 "Carter" ；
+
+某些数据库会列出介于 "Adams" 和 "Carter" 之间的人，**并包括** "Adams" 和 "Carter" 的人；
+
+而另一些数据库会列出介于 "Adams" 和 "Carter" 之间的人，**包括** "Adams" ，**但不包括** "Carter" 。
+
+所以，请检查你的数据库是如何处理 BETWEEN....AND 操作符的！
+
+<hr/>
+
+实例 2
+
+如需使用上面的例子显示范围之外的人，请使用 NOT 操作符：
+
+```sql
+SELECT * FROM Persons
+WHERE LastName
+NOT BETWEEN 'Adams' AND 'Carter'
+```
+
+结果集：
+
+| Id   | LastName | FirstName | Address        | City    |
+| :--- | :------- | :-------- | :------------- | :------ |
+| 3    | Carter   | Thomas    | Changan Street | Beijing |
+| 4    | Gates    | Bill      | Xuanwumen 10   | Beijing |
+
+
+
+## SQL Alias （别名）
+
+**通过使用 SQL，可以为列名称和表名称指定别名（Alias）。**
+
+### 表的 SQL Alias 语法
+
+```sql
+SELECT column_name(s)
+FROM table_name
+AS alias_name
+```
+
+### 列的 SQL Alias 语法
+
+```sql
+SELECT column_name AS alias_name
+FROM table_name
+```
+
+
+
+### 使用表名称别名
+
+假设我们有两个表分别是："Persons" 和 "Product_Orders"。我们分别为它们指定别名 "p" 和 "po"。
+
+现在，我们希望列出 "John Adams" 的所有定单。
+
+我们可以使用下面的 SELECT 语句：
+
+```sql
+SELECT po.OrderID, p.LastName, p.FirstName
+FROM Persons AS p, Product_Orders AS po
+WHERE p.LastName='Adams' AND p.FirstName='John'
+```
+
+不使用别名的 SELECT 语句：
+
+```sql
+SELECT Product_Orders.OrderID, Persons.LastName, Persons.FirstName
+FROM Persons, Product_Orders
+WHERE Persons.LastName='Adams' AND Persons.FirstName='John'
+```
+
+从上面两条 SELECT 语句您可以看到，别名使查询程序更易阅读和书写。
+
+### 使用一个列名别名
+
+表 Persons:
+
+| Id   | LastName | FirstName | Address        | City     |
+| :--- | :------- | :-------- | :------------- | :------- |
+| 1    | Adams    | John      | Oxford Street  | London   |
+| 2    | Bush     | George    | Fifth Avenue   | New York |
+| 3    | Carter   | Thomas    | Changan Street | Beijing  |
+
+SQL:
+
+```sql
+SELECT LastName AS Family, FirstName AS Name
+FROM Persons
+```
+
+结果：
+
+| Family | Name   |
+| :----- | :----- |
+| Adams  | John   |
+| Bush   | George |
+| Carter | Thomas |
+
+
+
+## SQL JOIN
+
+**SQL join 用于根据两个或多个表中的列之间的关系，从这些表中查询数据。**
+
+**Join 和 Key**
+
+有时为了得到完整的结果，我们需要从两个或更多的表中获取结果。我们就需要执行 join。
+
+数据库中的表可通过键将彼此联系起来。主键（Primary Key）是一个列，在这个列中的每一行的值都是唯一的。在表中，每个主键的值都是唯一的。这样做的目的是在不重复每个表中的所有数据的情况下，把表间的数据交叉捆绑在一起。
+
+请看 "Persons" 表：
+
+| Id_P | LastName | FirstName | Address        | City     |
+| :--- | :------- | :-------- | :------------- | :------- |
+| 1    | Adams    | John      | Oxford Street  | London   |
+| 2    | Bush     | George    | Fifth Avenue   | New York |
+| 3    | Carter   | Thomas    | Changan Street | Beijing  |
+
+请注意，"Id_P" 列是 Persons 表中的的主键。这意味着没有两行能够拥有相同的 Id_P。即使两个人的姓名完全相同，Id_P 也可以区分他们。
+
+接下来请看 "Orders" 表：
+
+| Id_O | OrderNo | Id_P |
+| :--- | :------ | :--- |
+| 1    | 77895   | 3    |
+| 2    | 44678   | 3    |
+| 3    | 22456   | 1    |
+| 4    | 24562   | 1    |
+| 5    | 34764   | 65   |
+
+请注意，"Id_O" 列是 Orders 表中的的主键，同时，"Orders" 表中的 "Id_P" 列用于引用 "Persons" 表中的人，而无需使用他们的确切姓名。
+
+请留意，"Id_P" 列把上面的两个表联系了起来。
+
+### 引用两个表
+
+我们可以通过引用两个表的方式，从两个表中获取数据：
+
+谁订购了产品，并且他们订购了什么产品？
+
+```
+SELECT Persons.LastName, Persons.FirstName, Orders.OrderNo
+FROM Persons, Orders
+WHERE Persons.Id_P = Orders.Id_P 
+```
+
+结果集：
+
+| LastName | FirstName | OrderNo |
+| :------- | :-------- | :------ |
+| Adams    | John      | 22456   |
+| Adams    | John      | 24562   |
+| Carter   | Thomas    | 77895   |
+| Carter   | Thomas    | 44678   |
+
+### 使用 Join （INNER JOIN 内连接）
+
+**注释：**INNER JOIN 与 JOIN 是相同的。
+
+除了上面的方法，我们也可以使用关键词 JOIN 来从两个表中获取数据。
+
+如果我们希望列出所有人的定购，可以使用下面的 SELECT 语句：
+
+```SQL
+SELECT Persons.LastName, Persons.FirstName, Orders.OrderNo
+FROM Persons
+INNER JOIN Orders
+ON Persons.Id_P = Orders.Id_P
+ORDER BY Persons.LastName
+```
+
+结果集：
+
+| LastName | FirstName | OrderNo |
+| :------- | :-------- | :------ |
+| Adams    | John      | 22456   |
+| Adams    | John      | 24562   |
+| Carter   | Thomas    | 77895   |
+| Carter   | Thomas    | 44678   |
+
+### 不同的 SQL JOIN
+
+除了我们在上面的例子中使用的 INNER JOIN（内连接），我们还可以使用其他几种连接。
+
+下面列出了您可以使用的 JOIN 类型，以及它们之间的差异。
+
+- JOIN: 如果表中有至少一个匹配，则返回行
+- INNER JOIN:INNER JOIN 与 JOIN 是相同的。
+- LEFT JOIN: 即使右表中没有匹配，也从左表返回所有的行
+- RIGHT JOIN: 即使左表中没有匹配，也从右表返回所有的行
+- FULL JOIN: 只要其中一个表中存在匹配，就返回行
+
+
+
+#### INNER JOIN
+
+在表中存在至少一个匹配时，INNER JOIN 关键字返回行。
+
+##### 关键字语法
+
+```SQL
+SELECT column_name(s)
+FROM table_name1
+INNER JOIN table_name2 
+ON table_name1.column_name=table_name2.column_name
+```
+
+**注释：**INNER JOIN 与 JOIN 是相同的。
+
+INNER JOIN 关键字在表中存在至少一个匹配时返回行。
+
+如果 "Persons" 中的行在 "Orders" 中没有匹配，就不会列出这些行。
+
+
+
+#### LEFT JOIN
+
+LEFT JOIN 关键字会从左表 (table_name1) 那里返回所有的行，即使在右表 (table_name2) 中没有匹配的行。
+
+##### 关键字语法
+
+```SQL
+SELECT column_name(s)
+FROM table_name1
+LEFT JOIN table_name2 
+ON table_name1.column_name=table_name2.column_name
+```
+
+**注释：**在某些数据库中， LEFT JOIN 称为 LEFT OUTER JOIN。
+
+
+
+原始的表 (用在例子中的)：
+
+"Persons" 表：
+
+| Id_P | LastName | FirstName | Address        | City     |
+| :--- | :------- | :-------- | :------------- | :------- |
+| 1    | Adams    | John      | Oxford Street  | London   |
+| 2    | Bush     | George    | Fifth Avenue   | New York |
+| 3    | Carter   | Thomas    | Changan Street | Beijing  |
+
+"Orders" 表：
+
+| Id_O | OrderNo | Id_P |
+| :--- | :------ | :--- |
+| 1    | 77895   | 3    |
+| 2    | 44678   | 3    |
+| 3    | 22456   | 1    |
+| 4    | 24562   | 1    |
+| 5    | 34764   | 65   |
+
+
+
+左连接（LEFT JOIN）实例
+
+现在，我们希望列出所有的人，以及他们的定购 - 如果有的话。
+
+您可以使用下面的 SELECT 语句：
+
+```SQL
+SELECT Persons.LastName, Persons.FirstName, Orders.OrderNo
+FROM Persons
+LEFT JOIN Orders
+ON Persons.Id_P=Orders.Id_P
+ORDER BY Persons.LastName
+```
+
+结果集：
+
+| LastName | FirstName | OrderNo |
+| :------- | :-------- | :------ |
+| Adams    | John      | 22456   |
+| Adams    | John      | 24562   |
+| Carter   | Thomas    | 77895   |
+| Carter   | Thomas    | 44678   |
+| Bush     | George    |         |
+
+LEFT JOIN 关键字会从左表 (Persons) 那里返回所有的行，即使在右表 (Orders) 中没有匹配的行。
+
+
+
+#### RIGHT JOIN
+
+RIGHT JOIN 关键字会右表 (table_name2) 那里返回所有的行，即使在左表 (table_name1) 中没有匹配的行。
+
+##### 关键字语法
+
+```sql
+SELECT column_name(s)
+FROM table_name1
+RIGHT JOIN table_name2 
+ON table_name1.column_name=table_name2.column_name
+```
+
+**注释：**在某些数据库中， RIGHT JOIN 称为 RIGHT OUTER JOIN。
+
+
+
+原始的表 (用在例子中的)：
+
+"Persons" 表：
+
+| Id_P | LastName | FirstName | Address        | City     |
+| :--- | :------- | :-------- | :------------- | :------- |
+| 1    | Adams    | John      | Oxford Street  | London   |
+| 2    | Bush     | George    | Fifth Avenue   | New York |
+| 3    | Carter   | Thomas    | Changan Street | Beijing  |
+
+"Orders" 表：
+
+| Id_O | OrderNo | Id_P |
+| :--- | :------ | :--- |
+| 1    | 77895   | 3    |
+| 2    | 44678   | 3    |
+| 3    | 22456   | 1    |
+| 4    | 24562   | 1    |
+| 5    | 34764   | 65   |
+
+
+
+右连接（RIGHT JOIN）实例
+
+现在，我们希望列出所有的定单，以及定购它们的人 - 如果有的话。
+
+您可以使用下面的 SELECT 语句：
+
+```sql
+SELECT Persons.LastName, Persons.FirstName, Orders.OrderNo
+FROM Persons
+RIGHT JOIN Orders
+ON Persons.Id_P=Orders.Id_P
+ORDER BY Persons.LastName
+```
+
+结果集：
+
+| LastName | FirstName | OrderNo |
+| :------- | :-------- | :------ |
+| Adams    | John      | 22456   |
+| Adams    | John      | 24562   |
+| Carter   | Thomas    | 77895   |
+| Carter   | Thomas    | 44678   |
+|          |           | 34764   |
+
+RIGHT JOIN 关键字会从右表 (Orders) 那里返回所有的行，即使在左表 (Persons) 中没有匹配的行。
+
+
+
+#### FULL JOIN
+
+只要其中某个表存在匹配，FULL JOIN 关键字就会返回行。
+
+##### 关键字语法
+
+```sql
+SELECT column_name(s)
+FROM table_name1
+FULL JOIN table_name2 
+ON table_name1.column_name=table_name2.column_name
+```
+
+**注释：**在某些数据库中， FULL JOIN 称为 FULL OUTER JOIN。
+
+
+
+原始的表 (用在例子中的)：
+
+"Persons" 表：
+
+| Id_P | LastName | FirstName | Address        | City     |
+| :--- | :------- | :-------- | :------------- | :------- |
+| 1    | Adams    | John      | Oxford Street  | London   |
+| 2    | Bush     | George    | Fifth Avenue   | New York |
+| 3    | Carter   | Thomas    | Changan Street | Beijing  |
+
+"Orders" 表：
+
+| Id_O | OrderNo | Id_P |
+| :--- | :------ | :--- |
+| 1    | 77895   | 3    |
+| 2    | 44678   | 3    |
+| 3    | 22456   | 1    |
+| 4    | 24562   | 1    |
+| 5    | 34764   | 65   |
+
+
+
+全连接（FULL JOIN）实例
+
+现在，我们希望列出所有的人，以及他们的定单，以及所有的定单，以及定购它们的人。
+
+您可以使用下面的 SELECT 语句：
+
+```sql
+SELECT Persons.LastName, Persons.FirstName, Orders.OrderNo
+FROM Persons
+FULL JOIN Orders
+ON Persons.Id_P=Orders.Id_P
+ORDER BY Persons.LastName
+```
+
+结果集：
+
+| LastName | FirstName | OrderNo |
+| :------- | :-------- | :------ |
+| Adams    | John      | 22456   |
+| Adams    | John      | 24562   |
+| Carter   | Thomas    | 77895   |
+| Carter   | Thomas    | 44678   |
+| Bush     | George    |         |
+|          |           | 34764   |
+
+FULL JOIN 关键字会从左表 (Persons) 和右表 (Orders) 那里返回所有的行。如果 "Persons" 中的行在表 "Orders" 中没有匹配，或者如果 "Orders" 中的行在表 "Persons" 中没有匹配，这些行同样会列出。
+
+
+
+## SQL UNION 和 UNION ALL 操作符
+
+UNION 操作符用于合并两个或多个 SELECT 语句的结果集。
+
+请注意，UNION 内部的 SELECT 语句必须拥有相同数量的列。列也必须拥有相似的数据类型。同时，每条 SELECT 语句中的列的顺序必须相同。
+
+### SQL UNION 语法
+
+```SQL
+SELECT column_name(s) FROM table_name1
+UNION
+SELECT column_name(s) FROM table_name2
+```
+
+**注释：**默认地，UNION 操作符选取不同的值。如果允许重复的值，请使用 UNION ALL。
+
+### SQL UNION ALL 语法
+
+```SQL
+SELECT column_name(s) FROM table_name1
+UNION ALL
+SELECT column_name(s) FROM table_name2
+```
+
+另外，UNION 结果集中的列名总是等于 UNION 中第一个 SELECT 语句中的列名。
+
+下面的例子中使用的原始表：
+
+Employees_China:
+
+| E_ID | E_Name         |
+| :--- | :------------- |
+| 01   | Zhang, Hua     |
+| 02   | Wang, Wei      |
+| 03   | Carter, Thomas |
+| 04   | Yang, Ming     |
+
+Employees_USA:
+
+| E_ID | E_Name         |
+| :--- | :------------- |
+| 01   | Adams, John    |
+| 02   | Bush, George   |
+| 03   | Carter, Thomas |
+| 04   | Gates, Bill    |
+
+### 使用 UNION 命令
+
+实例
+
+列出所有在中国和美国的不同的雇员名：
+
+```sql
+SELECT E_Name FROM Employees_China
+UNION
+SELECT E_Name FROM Employees_USA
+```
+
+结果
+
+| E_Name         |
+| :------------- |
+| Zhang, Hua     |
+| Wang, Wei      |
+| Carter, Thomas |
+| Yang, Ming     |
+| Adams, John    |
+| Bush, George   |
+| Gates, Bill    |
+
+**注释：**这个命令无法列出在中国和美国的所有雇员。在上面的例子中，我们有两个名字相同的雇员，他们当中只有一个人被列出来了。UNION 命令只会选取不同的值。
+
+### 使用 UNION ALL 命令
+
+UNION ALL 命令和 UNION 命令几乎是等效的，不过 UNION ALL 命令会列出所有的值。
+
+```sql
+SQL Statement 1
+UNION ALL
+SQL Statement 2
+```
+
+
+
+实例：
+
+列出在中国和美国的所有的雇员：
+
+```sql
+SELECT E_Name FROM Employees_China
+UNION ALL
+SELECT E_Name FROM Employees_USA
+```
+
+结果
+
+| E_Name         |
+| :------------- |
+| Zhang, Hua     |
+| Wang, Wei      |
+| Carter, Thomas |
+| Yang, Ming     |
+| Adams, John    |
+| Bush, George   |
+| Carter, Thomas |
+| Gates, Bill    |
