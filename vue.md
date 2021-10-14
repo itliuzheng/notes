@@ -12,6 +12,14 @@ Router.prototype.push = function push (location, onResolve, onReject) {
 
 
 
+## vue2.0
+
+### 新增指令
+
+#### 1.v-once
+
+表明该元素是一个静态根节点，这些节点生成后内容就不会被改变，因此在Virtual DOM的diff和patch的过程中，可以忽略这些节点来提升性能
+
 
 
 

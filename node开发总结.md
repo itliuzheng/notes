@@ -377,6 +377,30 @@ exports.getToken = function(token) {
 
 
 
+##### 非对称加密
+
+```ssh
+openssl
+生成私钥
+openssl > genrsa -out rsa_private_key.pem 2048
+											(2048位 私钥)
+
+根据私钥生成公钥：
+openssl > rsa -in rsa_private_key.pem -pubout -out rsa_public_key.pem
+```
+
+非对称加密  ： RS256
+
+```js
+const privateKey = fs.readFileSync(path.join(__dirname,'../keys/res_private_key.pem'))
+const tk = jwt.sign({username:'admin'},privateKey,{algorithm:'RS256'})
+
+const publicKey = fs.readFileSync(path.join(__dirname,'../keys/res_public_key.pem'))
+const result = jwt.verify(tk,publicKey)
+```
+
+
+
 ```javascript
 //app.js
 var expressJwt = require('express-jwt');
